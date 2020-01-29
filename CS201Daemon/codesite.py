@@ -124,8 +124,9 @@ def login_page(request):
 def code_submit(request):
     the_body = request.body.decode('utf-8')
     the_code = json.loads(the_body)
-    # need to load which problem_id is submitted and then load and run the test cases for that .
-    results = run_code(the_code, TestCase())
+    print(the_code)
+    # need to load which problem_id is submitted and then load and run the test cases for that.
+    results = run_code(the_code['code'], TestCase())
     return HttpResponse(results)
 
 
