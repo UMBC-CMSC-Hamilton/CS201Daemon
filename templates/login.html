@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login to cs201</title>
+</head>
+<link rel="stylesheet" href="{% static "login.css" %}">
+<body>
+<img id='Blason' src="{% static "BlasonAncenis.svg" %}">
+{% if user_not_recognized %}
+    <div>The Username entered was not recognized, try again.  </div>
+{% endif %}
+<form method="post">
+  {% csrf_token %}
+    Username <br>
+  <input type="text" name="username" value=""><br>
+    Password <br>
+  <input type="password" name="password" value=""><br>
+  <button type="submit">Login</button>
+</form>
+
+</body>
+</html>

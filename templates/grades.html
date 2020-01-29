@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS201: Grades for {{ username }}</title>
+</head>
+<link rel="stylesheet" href="{% static "index.css" %}">
+<body>
+<div id="top-bar" class="top-bar">
+    <table>
+        <tr>
+            <td> <span class="name-plate">Hello {{ username }}</span></td>
+            <td><a href="/">Code</a></td>
+            <td><a href="/grades">Grades</a></td>
+            <td><a href="/tracker">Tickets</a></td>
+            <td><a href="/settings">Settings</a></td>
+            <td><a href="/logout">Logout</a></td>
+        </tr>
+    </table>
+</div>
+<% div class="grade-window">
+<div class="grade-sidebar">
+    {% for category in grade_categories %}
+    <div class='grade-category' id="{{category}}" onclick="select_category(this)">{{ category }}</div>
+    {% endfor %}
+</div>
+<div class="grade-window" id="grade-window">
+
+    {% for category in grade_categories %}
+        <div class="grade-display" id="{{ category }}-display">
+            <table cellspacing="0">
+            {%  with current_category=grades|get_item:category %}
+            {% for assignment in current_category %}
+                <tr>
+                    <td>{{ assignment }}</td>
+                    {% with current_assignment=current_category|get_item:assignment %}
+                        <td>{{ current_assignment.score }} </td>
+                        <td>{{ current_assignment.total }} </td>
+                        <td>{{ current_assignment.comments }} </td>
+                    {% endwith %}
+                </tr>
+            {% endfor %}
+            {% endwith %}
+            </table>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>
+
+<script>
+    let currently_selected = 'Overall-display';
+    let current_tab = document.getElementById(currently_selected)
+
+    function select_category(element){
+        let current_div = document.getElementById(currently_selected)
+        let new_div = document.getElementById(element.id + '-display')
+        if (element !== currently_selected){
+            current_div.style.display = "none";
+            new_div.style.display = "block";
+            currently_selected = element.id + '-display';
+            current_tab.classList.remove("selected");
+            element.classList.add("selected");
+            current_tab = element;
+        }
+    }
+</script>

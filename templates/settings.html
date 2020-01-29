@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+</head>
+<link rel="stylesheet" href="{% static "index.css" %}">
+<body>
+<div id="top-bar" class="top-bar">
+    <table>
+        <tr>
+            <td> <span class="name-plate">Hello {{ username }}</span></td>
+            <td><a href="/">Code</a></td>
+            <td><a href="/grades">Grades</a></td>
+            <td><a href="/tracker">Tickets</a></td>
+            <td><a href="/settings">Settings</a></td>
+            <td><a href="/logout">Logout</a></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

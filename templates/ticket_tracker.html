@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+{% csrf_token %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS201: Ticket Tracker</title>
+</head>
+<link rel="stylesheet" href="{% static "index.css" %}">
+<body onload="onLoadRun()">
+<div id="top-bar" class="top-bar">
+    <table>
+        <tr>
+            <td><span class="name-plate">Hello {{ username }}</span></td>
+            <td><a href="/">Code</a></td>
+            <td><a href="/grades">Grades</a></td>
+            <td><a href="/tracker">Tickets</a></td>
+            <td><a href="/settings">Settings</a></td>
+            <td><a href="/logout">Logout</a></td>
+        </tr>
+    </table>
+</div>
+<div class="ticket-sidebar">
+    <div class="new-ticket-button" id="new-ticket-button" onclick="newTicket()">
+        &#x1F3AB; New Ticket
+    </div>
+</div>
+<div class="ticket-window">
+    <div class="ticket-creator" id="ticket-creator">
+        {% for field in fields %}
+            {% if field.field_type == 'input' %}
+                <div class="ticket-input-block">
+                    {{ field.name }}
+                    <br>
+                    <input class="ticket-input" type="text" id="{{ field.name }}" value="{{ field.value }}">
+                </div>
+            {% else %}
+                <div class="ticket-input-block">
+                    {{ field.name }}
+                    <br>
+                    {{ field.value }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <br>
+        <button class="ticket-submit-button" type="button" style="background-color: #5897fb;" onclick="clickSubmit()">Submit Ticket</button>
+        <button class="ticket-submit-button" type="button" style="background-color: #a41515;" onclick="resetTicket()">Cancel</button>
+    </div>
+</div>
+<div class="ticket-window">
+    <ul>
+        {% for ticket in tracker %}
+            <li>{{ ticket }}</li>
+        {% endfor %}
+    </ul>
+
+    <table>
+        {% for ticket in tickets %}
+        <tr>
+            <td>
+                {{ ticket.id }}
+            </td>
+            <td>
+                {{ ticket.user }}
+            </td>
+            <td>
+                {{ ticket.status }}
+            </td>
+            <td>
+                {{ ticket.description }}
+            </td>
+            <td>
+                {{ ticket.creation_date }}
+            </td>
+            <td>
+                {{ ticket.response }}
+            </td>
+            <td>
+                {{ ticket.type }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
+<script>
+    fields = [ {% for field in fields %} "{{ field.name }}", {% endfor %}];
+    default_values = [ {% for field in fields %} "{{ field.value }}", {% endfor %}];
+    next_id = {{ next_id }};
+
+    function getCSRFCookie() {
+        let cookies = document.cookie.split(';');
+        if (cookies.length) {
+            return (cookies[0].split('=')[1]);
+        } else {
+            return "";
+        }
+    }
+
+    function newTicket() {
+        let ticket_creator = document.getElementById('ticket-creator');
+        if (ticket_creator.style.display === "block") {
+            ticket_creator.style.display = "none";
+        } else {
+            ticket_creator.style.display = "block"
+        }
+    }
+
+    function clickSubmit() {
+        let result = {};
+        for (let i = 0; i < fields.length; i++) {
+            if(document.getElementById(fields[i]) != null) {
+                result[fields[i]] = document.getElementById(fields[i]).value;
+            } else {
+                result[fields[i]] = default_values[i];
+            }
+        }
+        let request = new XMLHttpRequest();
+        request.open("POST", '/submit-ticket', true);
+        request.setRequestHeader("X-CSRFToken", getCSRFCookie());
+        request.setRequestHeader("Content-type", "ticket");
+        request.send(JSON.stringify(result));
+        request.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200)
+            {
+                console.log(this.responseText);
+            }
+        };
+
+        console.log('sending ticket to server...');
+        resetTicket();
+    }
+
+    function resetTicket() {
+        console.log("resetting ticket");
+        let ticket_element = document.getElementById('ticket-creator');
+        for (let i = 0; i < fields.length; i++) {
+            if(document.getElementById(fields[i]) != null) {
+                document.getElementById(fields[i]).value = default_values[i];
+            }
+        }
+        ticket_element.style.display = "none";
+    }
+
+    function onLoadRun() {
+    }
+</script>

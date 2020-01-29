@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS201: {{ username }}</title>
+</head>
+<link rel="stylesheet" href="{% static "index.css" %}">
+{% csrf_token %}
+<body>
+    <div id="top-bar" class="top-bar">
+        <table>
+            <tr>
+                <td> <span class="name-plate">Hello {{ username }}</span></td>
+                <td><a href="/">Code</a></td>
+                <td><a href="/grades">Grades</a></td>
+                <td><a href="/tracker">Tickets</a></td>
+                <td><a href="/settings">Settings</a></td>
+                <td><a href="/logout">Logout</a></td>
+            </tr>
+        </table>
+    </div>
+    <div class="play-button" id='play-button' onclick="clickPlay()">&#x25B7;</div>
+    <div class="save-button" id="save-button" onclick="saveCode()">&#x1F4BE;</div>
+    <div id="editor"></div>
+    <div id="output"></div>
+    <div id="test-results"></div>
+</body>
+
+<script src="{% static 'ace.js' %}" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/dracula");
+    editor.session.setMode("ace/mode/python");
+    editor.setFontSize("22px")
+
+
+    function getCSRFCookie() {
+        let cookies = document.cookie.split(';');
+        for(var i = 0; i < cookies.length; i++)
+        {
+            console.log(cookies[i]);
+        }
+        return (cookies[0].split('=')[1]);
+    }
+
+    function clickPlay() {
+        console.log("we clicked the play button");
+        let request = new XMLHttpRequest();
+        console.log(editor.getValue())
+        request.open("POST", "/code-submit/", true);
+        request.setRequestHeader("X-CSRFToken", getCSRFCookie());
+        request.setRequestHeader("Content-type", "code");
+        request.send(JSON.stringify({code: editor.getValue()}));
+        console.log(editor.getValue())
+    }
+
+    function saveCode() {
+        let request = new XMLHttpRequest();
+        request.open("POST", '/save-code/', true);
+        request.setRequestHeader("X-CSRFToken", getCSRFCookie());
+        request.setRequestHeader("Content-type", "code");
+        request.send(JSON.stringify({code: editor.getValue()}));
+        console.log('saving code...')
+    }
+    // function getResponse()
+</script>
+</html>
